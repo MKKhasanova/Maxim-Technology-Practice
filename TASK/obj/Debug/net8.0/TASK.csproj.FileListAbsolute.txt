@@ -12,3 +12,4 @@ C:\Users\mariy\source\repos\TASK\TASK\obj\Debug\net8.0\refint\TASK.dll
 C:\Users\mariy\source\repos\TASK\TASK\obj\Debug\net8.0\TASK.pdb
 C:\Users\mariy\source\repos\TASK\TASK\obj\Debug\net8.0\TASK.genruntimeconfig.cache
 C:\Users\mariy\source\repos\TASK\TASK\obj\Debug\net8.0\ref\TASK.dll
+C:\Users\mariy\source\repos\TASK\TASK\obj\Debug\net8.0\TASK.sourcelink.json

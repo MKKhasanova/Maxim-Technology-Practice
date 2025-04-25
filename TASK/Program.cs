@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 class Program
 {
@@ -7,10 +8,33 @@ class Program
         Console.WriteLine("Введите строку:");
         string input = Console.ReadLine();
 
-        // Проверка на null или пустую строку
         if (string.IsNullOrWhiteSpace(input))
         {
             Console.WriteLine("Ошибка: Строка не может быть пустой!!!");
+            return;
+        }
+
+        List<char> mistake = new List<char>();
+
+        foreach (char c in input)
+        {
+            // Проверка с использованием ASCII-кодов
+            if (c < 97 || c > 122) // 97 - 'a', 122 - 'z'
+            {
+                mistake.Add(c);
+            }
+        }
+
+        if (mistake.Count > 0)
+        {
+            if (mistake.Count == 1)
+            {
+                Console.WriteLine("Ошибка: Введен неподходящий символ: " + string.Join(", ", mistake));
+            }
+            else
+            {
+                Console.WriteLine("Ошибка: Введены неподходящие символы: " + string.Join(", ", mistake));
+            }
             return;
         }
 
