@@ -1,0 +1,14 @@
+C:\Users\mariy\source\repos\TASK\TASK\bin\Debug\net8.0\TASK.exe
+C:\Users\mariy\source\repos\TASK\TASK\bin\Debug\net8.0\TASK.deps.json
+C:\Users\mariy\source\repos\TASK\TASK\bin\Debug\net8.0\TASK.runtimeconfig.json
+C:\Users\mariy\source\repos\TASK\TASK\bin\Debug\net8.0\TASK.dll
+C:\Users\mariy\source\repos\TASK\TASK\bin\Debug\net8.0\TASK.pdb
+C:\Users\mariy\source\repos\TASK\TASK\obj\Debug\net8.0\TASK.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\mariy\source\repos\TASK\TASK\obj\Debug\net8.0\TASK.AssemblyInfoInputs.cache
+C:\Users\mariy\source\repos\TASK\TASK\obj\Debug\net8.0\TASK.AssemblyInfo.cs
+C:\Users\mariy\source\repos\TASK\TASK\obj\Debug\net8.0\TASK.csproj.CoreCompileInputs.cache
+C:\Users\mariy\source\repos\TASK\TASK\obj\Debug\net8.0\TASK.dll
+C:\Users\mariy\source\repos\TASK\TASK\obj\Debug\net8.0\refint\TASK.dll
+C:\Users\mariy\source\repos\TASK\TASK\obj\Debug\net8.0\TASK.pdb
+C:\Users\mariy\source\repos\TASK\TASK\obj\Debug\net8.0\TASK.genruntimeconfig.cache
+C:\Users\mariy\source\repos\TASK\TASK\obj\Debug\net8.0\ref\TASK.dll
