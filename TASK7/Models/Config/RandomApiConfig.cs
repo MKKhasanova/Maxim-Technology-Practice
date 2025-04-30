@@ -1,4 +1,4 @@
-﻿namespace StringProcessor.API.Models.Config
+﻿namespace TASK7.Models.Config
 {
     public class RandomApiConfig
     {
@@ -9,5 +9,6 @@
     public class Settings
     {
         public List<string> BlackList { get; set; }
+        public int ParallelLimit { get; set; } = 5; // Значение по умолчанию
     }
 }

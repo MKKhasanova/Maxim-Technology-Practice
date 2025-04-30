@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using StringProcessor.API.Models.Config;
+using TASK7.Models.Config;
 using StringProcessor.API.Models.Requests;
 using StringProcessor.API.Models.Responses;
 using StringProcessor.API.Services.Interfaces;
