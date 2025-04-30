@@ -30,3 +30,6 @@ C:\Users\mariy\source\repos\TASK7\TASK7\obj\Debug\net8.0\refint\TASK7.dll
 C:\Users\mariy\source\repos\TASK7\TASK7\obj\Debug\net8.0\TASK7.pdb
 C:\Users\mariy\source\repos\TASK7\TASK7\obj\Debug\net8.0\TASK7.genruntimeconfig.cache
 C:\Users\mariy\source\repos\TASK7\TASK7\obj\Debug\net8.0\ref\TASK7.dll
+C:\Users\mariy\source\repos\TASK7\TASK7\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\mariy\source\repos\TASK7\TASK7\bin\Debug\net8.0\Microsoft.Extensions.Options.dll
+C:\Users\mariy\source\repos\TASK7\TASK7\bin\Debug\net8.0\Microsoft.Extensions.Primitives.dll

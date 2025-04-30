@@ -2,7 +2,9 @@ using Microsoft.OpenApi.Models;
 using StringProcessor.API.Services;
 using StringProcessor.API.Services.Interfaces;
 using StringProcessor.API.Utilities;
-using StringProcessor.API.Models.Config; // Добавляем using для конфигурации
+using Microsoft.Extensions.Options;
+using TASK7.Models.Config;
+// Добавляем using для конфигурации
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +13,11 @@ builder.Configuration.AddJsonFile("appsettings.json");
 
 // Add services to the container.
 builder.Services.AddControllers();
-
+builder.Services.AddSingleton<IRequestLimiter>(provider =>
+{
+    var config = provider.GetRequiredService<IOptions<RandomApiConfig>>();
+    return new RequestLimiter(config.Value.Settings.ParallelLimit);
+});
 // Регистрируем конфигурацию
 builder.Services.Configure<RandomApiConfig>(builder.Configuration);
 

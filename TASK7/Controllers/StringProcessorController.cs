@@ -10,19 +10,29 @@ namespace StringProcessor.API.Controllers
     public class StringProcessorController : ControllerBase
     {
         private readonly IStringProcessorService _service;
+        private readonly IRequestLimiter _limiter;
 
-        public StringProcessorController(IStringProcessorService service)
+        public StringProcessorController(
+            IStringProcessorService service,
+            IRequestLimiter limiter)
         {
             _service = service;
+            _limiter = limiter;
         }
 
         [HttpGet("process")]
         public async Task<IActionResult> ProcessString([FromQuery] ProcessStringRequest request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            if (!_limiter.TryAcquireSlot())
+            {
+                return StatusCode(503, "Сервис перегружен. Попробуйте позже.");
+            }
+
             try
             {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
                 var result = await _service.ProcessString(request);
                 return Ok(result);
             }
@@ -32,7 +42,11 @@ namespace StringProcessor.API.Controllers
             }
             catch
             {
-                return StatusCode(500, "Произошла внутренняя ошибка сервера");
+                return StatusCode(500, "Внутренняя ошибка сервера");
+            }
+            finally
+            {
+                _limiter.ReleaseSlot();
             }
         }
     }

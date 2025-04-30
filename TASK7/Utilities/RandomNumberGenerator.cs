@@ -4,8 +4,8 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using StringProcessor.API.Models.Config;
 
+using TASK7.Models.Config;
 namespace StringProcessor.API.Utilities
 {
     public interface IRandomNumberGenerator
