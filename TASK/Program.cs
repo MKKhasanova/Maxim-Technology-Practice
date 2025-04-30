@@ -37,7 +37,8 @@ class Program
             }
             return;
         }
-
+        Console.WriteLine("Выберите алгоритм сортировки (1 - Быстрая сортировка, 2 - Сортировка деревом, 3 - Оба метода):");
+        string choice = Console.ReadLine();
         int length = input.Length;
         string result;
         if (length % 2 == 0)
@@ -57,17 +58,44 @@ class Program
             string reversedInput = ReverseString(input);
             result = reversedInput + input;
         }
-        Console.WriteLine("Результат: " + result);
-        // Подсчет частоты символов в результирующей строке
+        Console.WriteLine("1. Результат: " + result);
+    
         Dictionary<char, int> characterCount = CountCharacterFrequency(result);
-        Console.WriteLine("Частота символов в обработанной строке:");
+        Console.WriteLine("2. Частота символов в обработанной строке:");
         foreach (var kvp in characterCount)
         {
             Console.WriteLine($"'{kvp.Key}': {kvp.Value} раз(а)");
         }
-        // Найти наибольшую подстроку, начинающуюся и заканчивающуюся на гласную
+
         string getLongestSVowels = GetLongestSubstringWithVowels(result);
-        Console.WriteLine("Подстрока, с началом и концом из 'aeiouy': " + getLongestSVowels);
+        Console.WriteLine("3. Самая длинная подстрока начинающаяся и заканчивающаяся на гласную: " + getLongestSVowels);
+
+        string sortedResult;
+
+        if (choice == "1")
+        {
+            sortedResult = QuickSort(result);
+            Console.WriteLine("4. Отсортированная строка (Быстрая сортировка): " + sortedResult);
+        }
+        else if (choice == "2")
+        {
+            sortedResult = TreeSort(result);
+            Console.WriteLine("4. Отсортированная строка (Сортировка деревом): " + sortedResult);
+        }
+        else if (choice == "3")
+        {
+            string sortedResultQuick = QuickSort(result);
+            string sortedResultTree = TreeSort(result);
+
+            // Вывод результатов сортировки обоими методами
+            Console.WriteLine("4. 1) Отсортированная строка (Быстрая сортировка): " + sortedResultQuick);
+            Console.WriteLine(" 2) Отсортированная строка (Сортировка деревом): " + sortedResultTree);
+        }
+        else
+        {
+            Console.WriteLine("Ошибка: Неверный выбор алгоритма сортировки.");
+            return;
+        }
         Console.ReadKey();
     }
 
@@ -123,6 +151,108 @@ class Program
 
         return longestSubs;
     }
+
+    // Быстрая сортировка
+    static string QuickSort(string input)
+    {
+        char[] arr = input.ToCharArray();
+        QuickSort(arr, 0, arr.Length - 1);
+        return new string(arr);
+    }
+
+    static void QuickSort(char[] arr, int low, int high)
+    {
+        if (low < high)
+        {
+            int pop = Partition(arr, low, high);
+            QuickSort(arr, low, pop - 1);
+            QuickSort(arr, pop + 1, high);
+        }
+    }
+
+    static int Partition(char[] arr, int low, int high)
+    {
+        char pivot = arr[high];
+        int i = (low - 1);
+        for (int j = low; j < high; j++)
+        {
+            if (arr[j] < pivot)
+            {
+                i++;
+                Swap(arr, i, j);
+            }
+        }
+        Swap(arr, i + 1, high);
+        return i + 1;
+    }
+
+    static void Swap(char[] arr, int i, int j)
+    {
+        char temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+
+    // Сортировка деревом
+    static string TreeSort(string input)
+    {
+        Node root = null;
+
+        foreach (char c in input)
+        {
+            root = Insert(root, c);
+        }
+
+        List<char> sortedChars = new List<char>();
+        TraverseTreeInOrder(root, sortedChars);
+
+        return new string(sortedChars.ToArray());
+    }
+
+    class Node
+    {
+        public char Data;
+        public Node Left;
+        public Node Right;
+
+        public Node(char data)
+        {
+            Data = data;
+            Left = null;
+            Right = null;
+        }
+    }
+
+    static Node Insert(Node root, char data)
+    {
+        if (root == null)
+        {
+            return new Node(data);
+        }
+
+        if (data < root.Data)
+        {
+            root.Left = Insert(root.Left, data);
+        }
+        else
+        {
+            root.Right = Insert(root.Right, data);
+        }
+
+        return root;
+    }
+
+    static void TraverseTreeInOrder(Node root, List<char> sortedChars)
+    {
+        if (root != null)
+        {
+            TraverseTreeInOrder(root.Left, sortedChars);
+            sortedChars.Add(root.Data);
+            TraverseTreeInOrder(root.Right, sortedChars);
+        }
+    }
 }
+    
+
 
 
