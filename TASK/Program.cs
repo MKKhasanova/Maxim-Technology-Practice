@@ -58,6 +58,13 @@ class Program
             result = reversedInput + input;
         }
         Console.WriteLine("Результат: " + result);
+        // Подсчет частоты символов в результирующей строке
+        Dictionary<char, int> characterCount = CountCharacterFrequency(result);
+        Console.WriteLine("Частота символов в обработанной строке:");
+        foreach (var kvp in characterCount)
+        {
+            Console.WriteLine($"'{kvp.Key}': {kvp.Value} раз(а)");
+        }
         Console.ReadKey();
     }
 
@@ -67,6 +74,25 @@ class Program
         char[] collect = s.ToCharArray();
         Array.Reverse(collect);
         return new string(collect);
+    }
+     // Метод для подсчета частоты символов
+    static Dictionary<char, int> CountCharacterFrequency(string s)
+    {
+        var frequency = new Dictionary<char, int>();
+
+        foreach (char c in s)
+        {
+            if (frequency.ContainsKey(c))
+            {
+                frequency[c]++;
+            }
+            else
+            {
+                frequency[c] = 1;
+            }
+        }
+
+        return frequency;
     }
 }
 
