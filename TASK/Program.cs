@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 class Program
 {
-    static void Main()
+    static readonly HttpClient client = new HttpClient();
+    static readonly Random random = new Random();
+
+    static async Task Main()
     {
         Console.WriteLine("Введите строку:");
         string input = Console.ReadLine();
@@ -13,7 +19,7 @@ class Program
             Console.WriteLine("Ошибка: Строка не может быть пустой!!!");
             return;
         }
-
+       
         List<char> mistake = new List<char>();
 
         foreach (char c in input)
@@ -37,10 +43,75 @@ class Program
             }
             return;
         }
+
+        // Вывод выбора алгоритма сортировки в самом Main
         Console.WriteLine("Выберите алгоритм сортировки (1 - Быстрая сортировка, 2 - Сортировка деревом, 3 - Оба метода):");
         string choice = Console.ReadLine();
+
+        // Получение случайного индекса через удалённый API
+        int randomPosition = await GetRandomPositionAsync(input.Length);
+        if (randomPosition == -1)
+        {
+            // Если не удалось получить случайное число, используем .NET
+            randomPosition = random.Next(0, input.Length);
+        }
+
+        // Реверсирование строки
+        string result = ProcessString(input);
+        Console.WriteLine("1. Результат: " + result);
+
+        // Частота символов
+        Dictionary<char, int> characterCount = CountCharacterFrequency(result);
+        Console.WriteLine("2. Частота символов в обработанной строке:");
+        foreach (var kvp in characterCount)
+        {
+            Console.WriteLine($"'{kvp.Key}': {kvp.Value} раз(а)");
+        }
+
+        // Длинная подстрока с гласными
+        string getLongestSVowels = GetLongestSubstringWithVowels(result);
+        Console.WriteLine("3. Самая длинная подстрока начинающаяся и заканчивающаяся на гласную: " + getLongestSVowels);
+
+        //сортировка
+        string resultSort = SortResult(input, choice);
+        Console.WriteLine(resultSort);
+
+        // Удаление символа по случайной позиции
+        string trimmedResult = result.Remove(randomPosition, 1);
+        Console.WriteLine($"5. Урезанная строка (буква на позиции {randomPosition} удалена): " + trimmedResult);
+        Console.ReadKey();
+    }
+    // метод для получения случайного индекса
+    static async Task<int> GetRandomPositionAsync(int maxLength)
+    {
+        try
+        {
+            // Формируем URL для API
+            string url = $"http://www.randomnumberapi.com/api/v1.0/random?min=0&max={maxLength - 1}&count=1";
+            var response = await client.GetStringAsync(url);
+
+            // Десериализация ответа
+            var randomNumberList = JsonSerializer.Deserialize<List<int>>(response);
+
+            // Проверка, что API вернул значение
+            if (randomNumberList != null && randomNumberList.Count > 0)
+            {
+                return randomNumberList[0]; // Возвращаем первое случайное число
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка при получении случайного числа через API: {ex.Message}");
+        }
+        // Если нет результата из API, генерируем случайное число
+        return random.Next(0, maxLength);
+    }
+
+
+    static string ProcessString(string input)
+    {
         int length = input.Length;
-        string result;
+
         if (length % 2 == 0)
         {
             int mid = length / 2;
@@ -50,53 +121,15 @@ class Program
             firstPart = ReverseString(firstPart);
             secondPart = ReverseString(secondPart);
 
-            result = firstPart + secondPart;
+            return ReverseString(firstPart) + ReverseString(secondPart);
         }
 
         else
         {
             string reversedInput = ReverseString(input);
-            result = reversedInput + input;
-        }
-        Console.WriteLine("1. Результат: " + result);
-    
-        Dictionary<char, int> characterCount = CountCharacterFrequency(result);
-        Console.WriteLine("2. Частота символов в обработанной строке:");
-        foreach (var kvp in characterCount)
-        {
-            Console.WriteLine($"'{kvp.Key}': {kvp.Value} раз(а)");
+            return reversedInput + input;
         }
 
-        string getLongestSVowels = GetLongestSubstringWithVowels(result);
-        Console.WriteLine("3. Самая длинная подстрока начинающаяся и заканчивающаяся на гласную: " + getLongestSVowels);
-
-        string sortedResult;
-
-        if (choice == "1")
-        {
-            sortedResult = QuickSort(result);
-            Console.WriteLine("4. Отсортированная строка (Быстрая сортировка): " + sortedResult);
-        }
-        else if (choice == "2")
-        {
-            sortedResult = TreeSort(result);
-            Console.WriteLine("4. Отсортированная строка (Сортировка деревом): " + sortedResult);
-        }
-        else if (choice == "3")
-        {
-            string sortedResultQuick = QuickSort(result);
-            string sortedResultTree = TreeSort(result);
-
-            // Вывод результатов сортировки обоими методами
-            Console.WriteLine("4. 1) Отсортированная строка (Быстрая сортировка): " + sortedResultQuick);
-            Console.WriteLine(" 2) Отсортированная строка (Сортировка деревом): " + sortedResultTree);
-        }
-        else
-        {
-            Console.WriteLine("Ошибка: Неверный выбор алгоритма сортировки.");
-            return;
-        }
-        Console.ReadKey();
     }
 
     // Метод для переворачивания строки
@@ -150,6 +183,34 @@ class Program
         }
 
         return longestSubs;
+    }
+
+    static string SortResult(string result, string choice)
+    {
+        string sortedResult;
+
+        if (choice == "1")
+        {
+            sortedResult = QuickSort(result);
+            return "4. Отсортированная строка (Быстрая сортировка): " + sortedResult;
+        }
+        else if (choice == "2")
+        {
+            sortedResult = TreeSort(result);
+            return "4. Отсортированная строка (Сортировка деревом): " + sortedResult;
+        }
+        else if (choice == "3")
+        {
+            string sortedResultQuick = QuickSort(result);
+            string sortedResultTree = TreeSort(result);
+
+            // Вернем результаты сортировки обоими методами в виде строки
+            return $"4. 1) Отсортированная строка (Быстрая сортировка): {sortedResultQuick}\n   2) Отсортированная строка (Сортировка деревом): {sortedResultTree}";
+        }
+        else
+        {
+            return "Ошибка: Неверный выбор алгоритма сортировки.";
+        }
     }
 
     // Быстрая сортировка
