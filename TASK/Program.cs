@@ -65,6 +65,9 @@ class Program
         {
             Console.WriteLine($"'{kvp.Key}': {kvp.Value} раз(а)");
         }
+        // Найти наибольшую подстроку, начинающуюся и заканчивающуюся на гласную
+        string getLongestSVowels = GetLongestSubstringWithVowels(result);
+        Console.WriteLine("Подстрока, с началом и концом из 'aeiouy': " + getLongestSVowels);
         Console.ReadKey();
     }
 
@@ -94,5 +97,32 @@ class Program
 
         return frequency;
     }
+    // Метод для нахождения наибольшей подстроки, начинающейся и заканчивающейся на гласную
+    static string GetLongestSubstringWithVowels(string s)
+    {
+        string Vowel = "aeiouy";
+        string longestSubs = string.Empty;
+
+        for (int i = 0; i < s.Length; i++)
+        {
+            if (Vowel.Contains(s[i]))
+            {
+                for (int j = i + 1; j < s.Length; j++)
+                {
+                    if (Vowel.Contains(s[j]) && j > i)
+                    {
+                        string subs = s.Substring(i, j - i + 1);
+                        if (subs.Length > longestSubs.Length)
+                        {
+                            longestSubs = subs;
+                        }
+                    }
+                }
+            }
+        }
+
+        return longestSubs;
+    }
 }
+
 
