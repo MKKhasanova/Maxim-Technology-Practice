@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using StringProcessor.API.Models.Config;
 using StringProcessor.API.Models.Requests;
 using StringProcessor.API.Models.Responses;
 using StringProcessor.API.Services.Interfaces;
@@ -13,11 +14,15 @@ namespace StringProcessor.API.Services
     public class StringProcessorService : IStringProcessorService
     {
         private readonly IRandomNumberGenerator _randomNumberGenerator;
+        private readonly RandomApiConfig _config;
         private const string Vowels = "aeiouy";
 
-        public StringProcessorService(IRandomNumberGenerator randomNumberGenerator)
+        public StringProcessorService(
+            IRandomNumberGenerator randomNumberGenerator,
+            IOptions<RandomApiConfig> config)
         {
             _randomNumberGenerator = randomNumberGenerator;
+            _config = config.Value;
         }
 
         public async Task<ProcessStringResponse> ProcessString(ProcessStringRequest request)
@@ -43,6 +48,9 @@ namespace StringProcessor.API.Services
             if (string.IsNullOrWhiteSpace(input))
                 throw new ArgumentException("Строка не может быть пустой!");
 
+            if (_config.Settings.BlackList?.Contains(input.ToLower()) == true)
+                throw new ArgumentException($"Строка '{input}' находится в чёрном списке");
+
             var invalidChars = input.Where(c => c < 97 || c > 122).ToList();
             if (invalidChars.Any())
                 throw new ArgumentException($"Недопустимые символы: {string.Join(", ", invalidChars)}");
@@ -58,10 +66,7 @@ namespace StringProcessor.API.Services
                 string firstPart = input.Substring(0, mid);
                 string secondPart = input.Substring(mid);
 
-                firstPart = ReverseString(firstPart);
-                secondPart = ReverseString(secondPart);
-
-                return firstPart + secondPart;
+                return ReverseString(firstPart) + ReverseString(secondPart);
             }
             else
             {
@@ -80,55 +85,44 @@ namespace StringProcessor.API.Services
         private Dictionary<char, int> CountCharacterFrequency(string s)
         {
             var frequency = new Dictionary<char, int>();
-
             foreach (char c in s)
             {
-                if (frequency.ContainsKey(c))
-                {
-                    frequency[c]++;
-                }
-                else
-                {
-                    frequency[c] = 1;
-                }
+                frequency[c] = frequency.ContainsKey(c) ? frequency[c] + 1 : 1;
             }
-
             return frequency;
         }
 
         private string GetLongestSubstringWithVowels(string s)
         {
-            string longestSubstring = string.Empty;
-
+            string longest = string.Empty;
             for (int i = 0; i < s.Length; i++)
             {
                 if (Vowels.Contains(s[i]))
                 {
                     for (int j = i + 1; j < s.Length; j++)
                     {
-                        if (Vowels.Contains(s[j]) && j > i)
+                        if (Vowels.Contains(s[j]))
                         {
                             string current = s.Substring(i, j - i + 1);
-                            if (current.Length > longestSubstring.Length)
+                            if (current.Length > longest.Length)
                             {
-                                longestSubstring = current;
+                                longest = current;
                             }
                         }
                     }
                 }
             }
-
-            return longestSubstring;
+            return longest;
         }
 
         private string SortString(string input, int sortMethod)
         {
             return sortMethod switch
             {
-                1 => QuickSort(input),
-                2 => TreeSort(input),
-                3 => $"QuickSort: {QuickSort(input)}\nTreeSort: {TreeSort(input)}",
-                _ => throw new ArgumentException("Неверный метод сортировки. Допустимые значения: 1, 2, 3")
+                1 => $"Быстрая сортировка: {QuickSort(input)}",
+                2 => $"Сортировка деревом: {TreeSort(input)}",
+                3 => $"Быстрая сортировка: {QuickSort(input)}\nСортировка деревом: {TreeSort(input)}",
+                _ => "Неизвестный метод сортировки"
             };
         }
 
@@ -153,7 +147,6 @@ namespace StringProcessor.API.Services
         {
             char pivot = arr[high];
             int i = low - 1;
-
             for (int j = low; j < high; j++)
             {
                 if (arr[j] < pivot)
@@ -166,17 +159,14 @@ namespace StringProcessor.API.Services
             return i + 1;
         }
 
-        private void Swap(ref char a, ref char b)
-        {
-            (a, b) = (b, a);
-        }
+        private void Swap(ref char a, ref char b) => (a, b) = (b, a);
 
         private string TreeSort(string input)
         {
             var root = BuildTree(input);
-            var sortedChars = new List<char>();
-            InOrderTraversal(root, sortedChars);
-            return new string(sortedChars.ToArray());
+            var sorted = new List<char>();
+            InOrderTraversal(root, sorted);
+            return new string(sorted.ToArray());
         }
 
         private Node BuildTree(string input)
@@ -191,30 +181,21 @@ namespace StringProcessor.API.Services
 
         private Node InsertNode(Node root, char data)
         {
-            if (root == null)
-            {
-                return new Node(data);
-            }
-
+            if (root == null) return new Node(data);
             if (data < root.Data)
-            {
                 root.Left = InsertNode(root.Left, data);
-            }
             else
-            {
                 root.Right = InsertNode(root.Right, data);
-            }
-
             return root;
         }
 
-        private void InOrderTraversal(Node root, List<char> result)
+        private void InOrderTraversal(Node node, List<char> result)
         {
-            if (root != null)
+            if (node != null)
             {
-                InOrderTraversal(root.Left, result);
-                result.Add(root.Data);
-                InOrderTraversal(root.Right, result);
+                InOrderTraversal(node.Left, result);
+                result.Add(node.Data);
+                InOrderTraversal(node.Right, result);
             }
         }
 
@@ -224,12 +205,7 @@ namespace StringProcessor.API.Services
             public Node Left { get; set; }
             public Node Right { get; set; }
 
-            public Node(char data)
-            {
-                Data = data;
-                Left = null;
-                Right = null;
-            }
+            public Node(char data) => Data = data;
         }
     }
 }
